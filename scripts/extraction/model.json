@@ -1,0 +1,50 @@
+{
+    "id": 10000000000000,
+    "external_id": 10000,
+    "title": "NOME PROVA",
+    "source":"SES-PE",
+    "subject": "Dermatologia",
+    "county": "PE", 
+    "year": 2023,
+    "question_text": "string",
+    "has_image": true,
+    "image_path": "string",
+    "image_description": "string",
+    "alternatives":[
+        {
+            "letter": "A",
+            "alternative_text":"string",
+            "is_correct": false,
+            "explanation_alternative":"string"
+        },
+        {
+            "letter": "B",
+            "alternative_text":"string",
+            "is_correct": false,
+            "explanation_alternative":"string"
+        },
+        {
+            "letter": "C",
+            "alternative_text":"string",
+            "is_correct": false,
+            "explanation_alternative":"string"
+        },
+        {
+            "letter": "D",
+            "alternative_text":"string",
+            "is_correct": false,
+            "explanation_alternative":"string"
+        },
+        {
+            "letter": "E",
+            "alternative_text":"string",
+            "is_correct": true,
+            "explanation_alternative":"string"
+        }
+    ],
+
+    "explanation_question":"string",
+    "has_reference": true,
+    "reference":"string"
+
+}
