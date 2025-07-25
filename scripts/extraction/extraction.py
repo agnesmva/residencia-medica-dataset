@@ -5,6 +5,8 @@ Script para extrair questões das provas
 import fitz  # PyMuPDF
 import re
 import os
+import uuid  # para gerar IDs únicos
+import json
 
 def extrair_texto_pdf(caminho_pdf):
     """
@@ -85,11 +87,7 @@ def separar_questoes_por_padrao(texto):
 
     return blocos
 
-import uuid  # para gerar IDs únicos
-import json
 
-import re
-import uuid
 
 def parsear_questoes_sespe_real(blocos_questoes, title, source, subject, county, year):
     questoes_json = []
