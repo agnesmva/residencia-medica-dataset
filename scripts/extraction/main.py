@@ -1,6 +1,5 @@
 from images import extrair_imagens_pdf
 from text_extraction import *
-from conv_json import *
 import pandas as pd
 import json
 
