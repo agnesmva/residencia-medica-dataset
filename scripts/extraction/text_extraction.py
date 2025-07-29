@@ -101,10 +101,6 @@ def extrair_gabaritos(texto):
         gabaritos.extend(encontrados)
     return gabaritos
 
-
-import re
-import json
-
 def extrair_questoes_estruturadas(texto):
     if isinstance(texto, list):
         texto = "\n".join(texto)
