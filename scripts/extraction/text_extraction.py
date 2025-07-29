@@ -9,6 +9,14 @@ def extrair_texto_do_pdf(caminho_pdf):
     doc.close()
     return texto_paginas
 
+def extrair_questoess(texto):
+    if isinstance(texto, list):
+        texto = "\n".join(texto)
+
+    padrao = r"(Questão\s*\|\s*\|.*?)(?=Questão\s*\|\s*\||\Z)"
+    questoes = re.findall(padrao, texto, flags=re.DOTALL)
+    return [q.strip() for q in questoes]
+
 def extrair_id(texto):
     padrao = r'Questão\s*\|\|\s*\|\s*\d+\s*\|\s*(\d+)\b'
     match = re.search(padrao, texto)
@@ -37,8 +45,6 @@ def extrair_enunciado(texto_paginas, pagina_inicial=2):
 
     return enunciados
 
-import re
-
 def extrair_alternativas(texto):
     padrao = r'A\)(.*?)\s*B\)(.*?)\s*C\)(.*?)\s*D\)(.*?)\s*E\)(.*?)(?:\n{2,}|$)'
     match = re.search(padrao, texto, re.DOTALL)
@@ -64,25 +70,21 @@ def extrair_alternativas(texto):
 
 
 
-
-
-import re
-
-def extrair_id(texto):
+def extrair_id_teste(texto):
     ids = []
     for pagina in texto:
         encontrados = re.findall(r'Questão\s*\|\s*\|\s*\d+\s*\|\s*(\d+)', pagina)
         ids.extend(encontrados)
     return ids
 
-def extrair_enunciado(texto):
+def extrair_enunciado_test(texto):
     enunciados = []
     for pagina in texto:
         encontrados = re.findall(r'Questão.*?\|\s*\|\s*\d+\s*\|\s*\d+\s*(.*?)(?=A\))', pagina, re.DOTALL)
         enunciados.extend([en.strip() for en in encontrados])
     return enunciados
 
-def extrair_alternativas(texto):
+def extrair_alternativas_teste(texto):
     alternativas_todas = []
     for pagina in texto:
         alternativas = re.findall(r'A\)(.*?)B\)(.*?)C\)(.*?)D\)(.*?)E\)(.*?)(?=Solução|Gabarito|GABARITO|$)', pagina, re.DOTALL)
@@ -98,3 +100,42 @@ def extrair_gabaritos(texto):
             encontrados = re.findall(r'GABARITO:\s*ALTERNATIVA\s+([A-E])', pagina)
         gabaritos.extend(encontrados)
     return gabaritos
+
+
+import re
+import json
+
+def extrair_questoes_estruturadas(texto):
+    if isinstance(texto, list):
+        texto = "\n".join(texto)
+
+    padrao = re.compile(
+        r"Questão\s*\|\s*\|\s*(\d{4})\s*\|\s*(\d+)\s*\n"                            # ano e id
+        r"(.*?)(?=^[A-E]\))"                                                       # enunciado
+        r"(A\).+?)"                                                                # alternativas começando com A)
+        r"(?:\nSolução\s+Gabarito:\s*([A-E])\)?\s*(.*?)\n(?=Questão\s*\|\s*\||\Z))",# gabarito e solução
+        re.DOTALL | re.MULTILINE
+    )
+
+    questoes = []
+
+    for match in padrao.finditer(texto):
+        ano, id_questao, enunciado, alternativas_bloco, gabarito, solucao = match.groups()
+
+        # Extrair alternativas A-E
+        alternativas = dict()
+        alt_padrao = re.findall(r"([A-E])\)\s*(.*?)(?=(?:\n[A-E]\)|\nSolução|\Z))", alternativas_bloco, re.DOTALL)
+        for letra, texto_alt in alt_padrao:
+            alternativas[letra] = ' '.join(texto_alt.strip().split())
+
+        questoes.append({
+            "id": id_questao.strip(),
+            "ano": ano.strip(),
+            "fonte": "ENARE",
+            "enunciado": ' '.join(enunciado.strip().split()),
+            "alternativas": alternativas,
+            "gabarito": gabarito.strip(),
+            "solucao": ' '.join(solucao.strip().split())
+        })
+
+    return questoes
